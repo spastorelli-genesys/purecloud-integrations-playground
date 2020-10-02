@@ -1,0 +1,139 @@
+{% extends "base.html" %} {% block title %}{{ page_title }}{% endblock %} {%
+block content%}
+<div class="content">
+  <h2>Screenshare - Generate Code example</h2>
+  <form>
+    <div class="field">
+      <label class="label">Conversation ID</label>
+      <div class="control">
+        <input
+          id="conversationId"
+          class="input"
+          type="text"
+          placeholder="Conversation ID"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Participant ID</label>
+      <div class="control">
+        <input
+          id="participantId"
+          class="input"
+          type="text"
+          placeholder="Participant ID"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button id="genCodeButton" class="button is-link">Generate</button>
+      </div>
+    </div>
+  </form>
+</div>
+<div id="activationResults" style="display: none;">
+  <span id="activationCode"></span>
+  <div class="field">
+    <div class="control">
+      <button id="delCodeButton" class="button is-link">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block page_scripts %}
+<script>
+  const accessToken = "{{ current_user.access_token}}";
+  const pureCloudApiBaseUrl = "https://api.mypurecloud.com/api/v2";
+
+  function generateScreenshareCode(conversationId, participantId) {
+    const convParticipantCodeEndpoint = `${pureCloudApiBaseUrl}/conversations/${conversationId}/participants/${participantId}/codes`;
+    fetch(convParticipantCodeEndpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: '{"mediaType":"screenshare"}'
+    })
+      .then(resp => {
+        console.log("Generate Conversation Participant code resp:", resp);
+        if (resp.ok) {
+          resp.json().then(codeResp => {
+            const activationResultsDiv = document.querySelector(
+              "#activationResults"
+            );
+            const activationCodeDiv = document.querySelector("#activationCode");
+            activationCodeDiv.innerText = codeResp.addCommunicationCode;
+            activationCodeDiv.setAttribute(
+              "data-conversationId",
+              conversationId
+            );
+            activationCodeDiv.setAttribute("data-participantId", participantId);
+            activationResultsDiv.style.display = "block";
+          });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  function deleteScreenshareCode(code, conversationId, participantId) {
+    const convParticipantCodeEndpoint = `${pureCloudApiBaseUrl}/conversations/${conversationId}/participants/${participantId}/codes`;
+    fetch(`${convParticipantCodeEndpoint}/${code}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+      .then(resp => {
+        console.log("Generate Conversation Participant code resp:", resp);
+        if (resp.ok) {
+          console.log("Code deleted");
+          const activationCodeSpan = document.querySelector("#activationCode");
+          activationCodeSpan.innerText = "";
+          const conversationId = activationCodeSpan.removeAttribute(
+            "data-conversationId"
+          );
+          const participantId = activationCodeSpan.removeAttribute(
+            "data-participantId"
+          );
+          const activationResultsDiv = document.querySelector(
+            "#activationResults"
+          );
+          activationResultsDiv.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  const genActivationCodeButton = document.querySelector("#genCodeButton");
+  genActivationCodeButton.addEventListener("click", e => {
+    e.preventDefault();
+    const conversationId = document.querySelector("#conversationId").value;
+    const participantId = document.querySelector("#participantId").value;
+
+    generateScreenshareCode(conversationId, participantId);
+  });
+
+  const delActivationCodeButton = document.querySelector("#delCodeButton");
+  delActivationCodeButton.addEventListener("click", e => {
+    e.preventDefault();
+    const activationCodeSpan = document.querySelector("#activationCode");
+    const code = activationCodeSpan.innerText;
+    const conversationId = activationCodeSpan.getAttribute(
+      "data-conversationId"
+    );
+    const participantId = activationCodeSpan.getAttribute("data-participantId");
+
+    deleteScreenshareCode(code, conversationId, participantId);
+  });
+</script>
+{% endblock %}

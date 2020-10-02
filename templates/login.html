@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}{{ page_title }}{% endblock %} {%
+block content %}
+<div class="field has-addons">
+  <p class="control">
+    <a class="button is-primary" href="{{ purecloud_login_url }}">
+      <span class="icon is-small">
+        <i>
+          <svg class="genesys-logo">
+            <use xlink:href="#genesys-logo">
+              <symbol id="genesys-logo" viewBox="0 0 32 32">
+                <path
+                  d="M22.59,1.79a1.51,1.51,0,1,1-1.51,1.51,1.51,1.51,0,0,1,1.51-1.51m0-1.79a3.29,3.29,0,1,0,3.29,3.29A3.29,3.29,0,0,0,22.59,0ZM20.35,10.07a3.46,3.46,0,0,1,0,6.92H11.65a3.46,3.46,0,0,1,0-6.92h8.71m0-2.07H11.65a5.53,5.53,0,0,0,0,11.06h8.71A5.53,5.53,0,1,0,20.35,8Zm0,15a3.46,3.46,0,0,1,0,6.92H16.59a3.46,3.46,0,0,1,0-6.92h3.76m0-2.07H16.59a5.53,5.53,0,0,0,0,11.06h3.76a5.53,5.53,0,1,0,0-11.06Z"
+                ></path>
+              </symbol>
+            </use>
+          </svg>
+        </i>
+      </span>
+      <span>Login with PureCloud</span>
+    </a>
+  </p>
+</div>
+{% endblock %}

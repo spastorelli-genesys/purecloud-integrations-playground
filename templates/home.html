@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block scripts %}
+<script src="/js/chat.js"></script>
+<script
+  id="cxBus"
+  src="https://apps.mypurecloud.com/widgets/9.0/cxbus.min.js"
+  onload="javascript: configureChatWidget();"
+></script>
+{% endblock %} {% block title %}{{ page_title }}{% endblock %} {% block content
+%}
+<a id="chatButton" class="button chat">
+  <span class="icon is-large has-text-white">
+    <i class="far fa-comments fa-2x" data-icon="chat"></i>
+  </span>
+</a>
+  {% endblock %} {% block page_scripts %}
+  <script>
+    const chatButton = document.querySelector("#chatButton");
+    chatButton.addEventListener("click", function() {
+      startChat();
+    });
+  </script>
+  {% endblock %}
+</span>

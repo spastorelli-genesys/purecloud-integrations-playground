@@ -1,0 +1,62 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#" data-config-id="brand">Integrations Demo</a>
+    <a
+      role="button"
+      class="navbar-burger burger"
+      aria-label="menu"
+      aria-expanded="false"
+      data-target="navbarBasicExample"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/">
+        Chat
+      </a>
+      <a class="navbar-item" href="/webrtc">
+        WebRTC
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      {% if not current_user.is_authenticated %}
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-primary" href="/login">
+            <strong>Login</strong>
+          </a>
+        </div>
+      </div>
+      {% else %}
+      <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+              {{ current_user.username }}
+          </a>
+          <div class="navbar-dropdown">
+            <div class="navbar-item pc-info">
+              <div class="pc-info-item">
+                <span class="pc-info-item-label">User ID:</span>
+                <span class="pc-info-item-value">{{ current_user.purecloud_id }}</span>
+              </div>
+              <div class="pc-info-item">
+                <span class="pc-info-item-label">Organization:</span>
+                <span class="pc-info-item-value">{{ current_user.purecloud_org.name }} ({{current_user.purecloud_org.id}})</span>
+              </div>
+            </div>
+            <hr class="navbar-divider">
+            <a class="navbar-item">
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>

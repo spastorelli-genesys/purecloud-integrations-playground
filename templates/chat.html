@@ -1,0 +1,150 @@
+{% extends "base.html" %} {% block scripts %}
+<script
+  src="https://apps.mypurecloud.com/widgets/9.0/cxbus.min.js"
+  onload="javascript:CXBus.configure({debug:false,pluginsPath:'https://apps.mypurecloud.com/widgets/9.0/plugins/'}); CXBus.loadPlugin('widgets-core');"
+></script>
+{% endblock %} {% block title %}{{ page_title }}{% endblock %} {% block content
+%}
+<script>
+  const PURECLOUD_WIDGET_DEPLOYMENT_KEY =
+    "da0ba755-efcc-4e93-958a-fea3dea65fb2"; // INSERT YOUR CHAT WIDGET DEPLOYMENT KEY HERE
+  const PURECLOUD_ORG_GUID = "cc329c9f-a78c-4788-8808-6fdf739234f7"; // INSERT YOUR ORGANIZATION GUID HERE
+
+  const GUEST_CHAT_API = "https://api.mypurecloud.com/api/v2/webchat/guest";
+
+  window._genesys = {
+    widgets: {
+      webchat: {
+        transport: {
+          type: "purecloud-v2-sockets",
+          dataURL: "https://api.mypurecloud.com",
+          deploymentKey: PURECLOUD_WIDGET_DEPLOYMENT_KEY,
+          orgGuid: PURECLOUD_ORG_GUID,
+          interactionData: {
+            routing: {
+              targetType: "QUEUE",
+              targetAddress: "Steeve Test Queue 1",
+              priority: 2
+            }
+          }
+        }
+      }
+    }
+  };
+
+  function validateRequiredFields(event, form, input) {
+    // Initial load input elem is not yet loaded
+    if (!input) return false;
+
+    for (let i = 0; i < input.length; i++) {
+      if (!input[i].value || input[i].value === "") {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function getWebChatMessages(chatSessionData, members) {
+    const { jwt, conversationId, memberId } = chatSessionData;
+    const getWebChatMsgsEndpoint = `${GUEST_CHAT_API}/conversations/${conversationId}/messages`;
+    fetch(getWebChatMsgsEndpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`
+      }
+    })
+      .then(resp => {
+        console.log("Get Chat Messages resp:", resp);
+        if (resp.ok) {
+          resp.json().then(msgResp => console.log(msgResp));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  function getAdvancedConfig() {
+    return {
+      form: {
+        autoSubmit: false,
+        firstname: "",
+        lastname: "",
+        email: "",
+        subject: ""
+      },
+      formJSON: {
+        wrapper: "<table></table>",
+        inputs: [
+          {
+            id: "cx_webchat_form_firstname",
+            name: "firstname",
+            maxlength: "100",
+            placeholder: "Required",
+            label: "First Name",
+            validate: validateRequiredFields
+          },
+          {
+            id: "cx_webchat_form_lastname",
+            name: "lastname",
+            maxlength: "100",
+            placeholder: "Required",
+            label: "Last Name",
+            validate: validateRequiredFields
+          },
+          {
+            id: "cx_webchat_form_email",
+            name: "email",
+            maxlength: "100",
+            placeholder: "Required",
+            label: "Email",
+            validate: validateRequiredFields
+          },
+          {
+            id: "cx_webchat_form_phonenumber",
+            name: "phonenumber",
+            maxlength: "100",
+            placeholder: "Optional",
+            label: "Phone Number"
+          }
+        ]
+      }
+    };
+  }
+
+  const customPlugin = CXBus.registerPlugin("Custom");
+  let chatSessionData;
+
+  customPlugin.subscribe("WebChatService.started", function(evt) {
+    console.log("Chat started", evt);
+    chatSessionData = evt.data.data;
+  });
+
+  customPlugin.subscribe("WebChatService.ended", function(evt) {
+    console.log("Chat ended", evt);
+    getWebChatMessages(chatSessionData);
+  });
+</script>
+<section class="section">
+  <div class="container">
+    <div id="chatButton" class="chat">
+      <span class="icon is-large has-text-white">
+        <i class="far fa-comments fa-2x" data-icon="chat"></i>
+      </span>
+    </div>
+    <div id="chatLog">
+      Log
+    </div>
+  </div>
+</section>
+
+<script>
+  const chatButton = document.querySelector("#chatButton");
+  chatButton.addEventListener("click", function() {
+    customPlugin.command("WebChat.open", getAdvancedConfig());
+  });
+</script>
+
+{% endblock %}

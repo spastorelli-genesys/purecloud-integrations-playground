@@ -1,0 +1,105 @@
+{% extends "base.html" %} {% block scripts %}
+<script
+  src="https://apps.mypurecloud.com/widgets/9.0/cxbus.min.js"
+  onload="javascript:CXBus.configure({debug:false,pluginsPath:'https://apps.mypurecloud.com/widgets/9.0/plugins/'}); CXBus.loadPlugin('widgets-core');"
+></script>
+{% endblock %} {% block title %}{{ page_title }}{% endblock %} {% block content
+%}
+
+<button type="button" id="chat-button" onclick="customPlugin.command('WebChat.open', getAdvancedConfig());">Start Chat</button>
+<a href="/chat2">Go to chat 2 page</a>
+
+{% endblock %} {% block page_scripts %}
+<script src="https://apps.mypurecloud.com/widgets/9.0/cxbus.min.js" onload="javascript:CXBus.configure({debug:false,pluginsPath:'https://apps.mypurecloud.com/widgets/9.0/plugins/'}); CXBus.loadPlugin('widgets-core');"></script>
+
+<script>
+  window._genesys = {
+    "widgets": {
+      "webchat": {
+        "transport": {
+          "type": "purecloud-v2-sockets",
+          "dataURL": "https://api.mypurecloud.com",
+          "deploymentKey": "da0ba755-efcc-4e93-958a-fea3dea65fb2",
+          "orgGuid": "cc329c9f-a78c-4788-8808-6fdf739234f7",
+          "interactionData": {
+            "routing": {
+              "targetType": "QUEUE",
+              "targetAddress": "Steeve Test Queue 1",
+              "priority": 2
+            }
+          }
+        },
+        "userData": {
+          "addressStreet": "",
+          "addressCity": "",
+          "addressPostalCode": "",
+          "addressState": "",
+          "phoneNumber": "",
+          "customField1Label": "Codagencia",
+          "customField1": "123456789",
+          "customField2Label": "TestField2",
+          "customField2": "Value2",
+          "customField3Label": "",
+          "customField3": ""
+        }
+      }
+    }
+  };
+
+  function getAdvancedConfig() {
+    return {
+      "form": {
+        "autoSubmit": false,
+        "firstname": "John",
+        "lastname": "Smith",
+        "email": "",
+        "subject": ""
+      },
+      "formJSON": {
+        "wrapper": "<table></table>",
+        "inputs": [
+          {
+            "id": "cx_webchat_form_firstname",
+            "name": "firstname",
+            "maxlength": "100",
+            "placeholder": "Required",
+            "label": "First Name"
+          },
+          {
+            "id": "cx_webchat_form_lastname",
+            "name": "lastname",
+            "maxlength": "100",
+            "placeholder": "Required",
+            "label": "Last Name"
+          },
+          {
+            "id": "cx_webchat_form_email",
+            "name": "email",
+            "maxlength": "100",
+            "placeholder": "Optional",
+            "label": "Email"
+          },
+          {
+            "id": "cx_webchat_form_subject",
+            "name": "subject",
+            "maxlength": "100",
+            "placeholder": "Optional",
+            "label": "Subject"
+          },
+          {
+            "id": "cx_webchat_form_codeagencia",
+            "name": "Codeagencia",
+            "maxlength": "100",
+            "placeholder": "Custom data placeholder",
+            "label": "Codeagencia",
+            "value": "12345"
+          }
+        ]
+      }
+    };
+  }
+
+  const customPlugin = CXBus.registerPlugin('Custom');
+</script>
+
+{% endblock %}
